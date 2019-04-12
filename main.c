@@ -14,7 +14,7 @@
 
 int pos=1;
 int nowPos=1;
-int nowX=1;
+int nowX=2;
 int nowY=1;
 int targetX;
 int targetY;
@@ -62,7 +62,7 @@ void operating(int sender,int target)
 {
     //==========move to sender
     calcMove(sender);
-    if(paht)//right
+    if(path)//right
     {
         if(height)
         {
@@ -90,7 +90,7 @@ void operating(int sender,int target)
     }
     //==========move to target
     calcMove(target);
-    if(paht)//right
+    if(path)//right
     {
         if(height)
         {
@@ -123,4 +123,5 @@ void main()
 {
 	operating(6,4);
 }
+
 //2013DUODUOProgramAA0905
