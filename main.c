@@ -4,124 +4,151 @@
 #define true 1
 #define false 0
 
-#define POS1 0
-#define POS2 1
-#define POS3 2
+#define POSX 0
+#define POSY 1
 
-#define HIGH1 3
-#define HIGH2 4
-#define HIGH3 5
+#define SPEED 40
 
-int pos=1;
-int nowPos=1;
+int senderX,senderY,targetX,targetY;
 int nowX=2;
 int nowY=1;
-int targetX;
-int targetY;
-int path;//false:left  true:right
-int height;//false:down  true:up
-int moveX,moveY;
+int horizon;
+int moveX;
 
-void calcMove(int target)
+void catch(void)
 {
-    switch(target%3)
-    {
-        case 0:targetX=1;break;
-        case 1:targetX=2;break;
-        case 2:targetX=3;break;
-    }
-    targetY=target/3+1;
-    //=======X==========
-    if(targetX>=nowX)
-    {
-        path=true;
-        moveX=targetX-nowX;
-    }
-    else
-    {
-        path=false;
-        moveX=nowX-targetX;
-    }
-    //========End of X==========
-    if(targetY>=nowY)
-    {
-        height=true;
-        moveY=targetY-nowY;
-        printf("input:%d\ntargetX:%d,Y:%d\nI'm in height true",target,targetX,targetY);
-    }
-    else
-    {
-        height=false;
-        moveY=nowY-targetY;
-        printf("intput:%d\ntargetX:%d,Y:%d\nI'm in height false",target,targetX,targetY);
-    }
+    ;
+}
 
+void release(void)
+{
+    ;
+}
+
+void down(int targetY1)
+{
+    int i;
+    SetMotoCL(0,-40);
+    for(i=0;i<(5-targetY1);i++)
+    {
+        while(DI(1)==0)
+			printf("%d",DI(1));
+        while(DI(1)==1)
+			printf("%d",DI(1));
+    }
+    SetMotoCL(0,0);
+    nowY=targetY1;
+}
+
+void moveRight(void)
+{
+    int i;
+    SetMotoCL(0,40);
+    for(i=0;i<moveX;i++)
+    {
+        while(DI(0)==0)
+			printf("%d",DI(1));
+        while(DI(0)==1)
+			printf("%d",DI(1));
+    }
+    SetMotoCL(0,0);
+    nowX=nowX+moveX;
+}
+
+void moveLeft(void)
+{
+    int i;
+    SetMotoCL(0,-40);
+    for(i=0;i<moveX;i++)
+    {
+        while(DI(0)==0)
+			printf("%d",DI(1));
+        while(DI(0)==1)
+			printf("%d",DI(1));
+    }
+    SetMotoCL(0,0);
+    nowX=nowX-moveX;
+}
+
+void up(void)
+{
+    int i;
+    SetMotoCL(0,40);
+    for(i=0;i<(5-nowY);i++)
+    {
+        while(DI(1)==0)
+			printf("%d",DI(1));
+        while(DI(1)==1)
+			printf("%d",DI(1));
+    }
+    SetMotoCL(0,0);
+}
+
+void move(void)
+{
+    up();
+    if(horizon==1)
+    {
+        moveRight();
+    }
+    else
+    {
+        moveLeft();
+    }
+}
+
+void getToSender(void)
+{
+    if(senderX>=nowX)
+            {
+                horizon=1;
+                moveX=senderX-nowX;
+            }
+    else
+            {
+                horizon=0;
+                moveX=nowX-senderX;
+                
+            }
+}
+
+void getToTarget(void)
+{
+    if(targetX>=nowX)
+            {
+                horizon=1;
+                moveX=targetX-nowX;
+            }
+    else
+            {
+                horizon=0;
+                moveX=nowX-targetX;
+                
+            }
 }
 
 void operating(int sender,int target)
 {
-    //==========move to sender
-    calcMove(sender);
-    if(path)//right
-    {
-        if(height)
-        {
-            //righthigh
-            printf("Right High send");
-        }
-        else
-        {
-            //rightlow
-            printf("Right Low send");
-        }
-    }
-    else//left
-    {
-        if(height)
-        {
-            //lefthigh
-            printf("Left High send");
-        }
-        else
-        {
-            //leftdown
-            printf("Left Down send");
-        }
-    }
-    //==========move to target
-    calcMove(target);
-    if(path)//right
-    {
-        if(height)
-        {
-            //righthigh
-            printf("tar Right High");
-        }
-        else
-        {
-            //rightlow
-            printf("tar Right Low");
-        }
-    }
-    else//left
-    {
-        if(height)
-        {
-            //lefthigh
-            
-            printf("tar Left High");
-        }
-        else
-        {
-            //leftdown
-            printf("tar Left Down");
-        }
-    }
+    senderX=(sender%3)+1;
+    senderY=(sender/3)+1;
+    targetX=(target%3)+1;
+    targetY=(target/3)+1;
+    getToSender();
+    move();
+    down(senderY);
+    button();
+    getToTarget();
+    move();
+    down(targetY);
+	//printf("x:%d",moveX);
+    
 }
 
 void main()
 {
 	operating(6,4);
+    //nowY=3;
 }
+
 
 //2013DUODUOProgramAA0905
